@@ -32,7 +32,7 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="ja">
-      <body className={`${font.className} antialiased`}>
+      <body className={`${font.className}`}>
         <MantineProvider theme={theme} defaultColorScheme="auto">
           <ModalsProvider>
             <DatesProvider settings={{ firstDayOfWeek: 0 }}>

@@ -7,7 +7,7 @@ import Quote from "@/components/quote";
 
 export default function Home() {
   return (
-    <div>
+    <>
       <Flex justify="space-between">
         <Greeting />
         <SignOutButton />
@@ -20,6 +20,6 @@ export default function Home() {
       <Suspense>
         <Books />
       </Suspense>
-    </div>
+    </>
   );
 }

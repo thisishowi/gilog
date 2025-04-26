@@ -9,7 +9,7 @@ export default async function Quote() {
   const data = await response.json();
 
   return (
-    <Paper p="sm" mb="xs" shadow="sm" withBorder>
+    <Paper p="sm" my="xs" shadow="sm" withBorder>
       <Group justify="space-between">
         <Text c="dimmed">Advice #{data.slip.id}</Text>
         <SpeechButton text={data.slip.advice} />
