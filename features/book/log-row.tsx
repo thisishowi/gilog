@@ -1,6 +1,6 @@
 import { useProblems } from "@/contexts/problems-context";
 import { ProblemType } from "@/lib/types";
-import { ActionIcon, Button, Group, Popover, Stack } from "@mantine/core";
+import { ActionIcon, Button, Group, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import ProblemDetails from "./problem-details";
 import { IconPlus } from "@tabler/icons-react";

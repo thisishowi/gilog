@@ -21,7 +21,8 @@ export default function useDeleteBookModal(book: BookType, navigate?: string) {
       onConfirm: async () => {
         try {
           await deleteBook(book.book_id);
-          navigate ? router.push(navigate) : router.refresh();
+          if (navigate) router.push(navigate);
+          else router.refresh();
         } catch {
           alert("削除に失敗しました");
         }

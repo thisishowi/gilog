@@ -6,7 +6,6 @@ import {
   Paper,
   Text,
   Title,
-  Transition,
 } from "@mantine/core";
 import { useClickOutside, useDisclosure } from "@mantine/hooks";
 import { IconMessage, IconPencil, IconStars } from "@tabler/icons-react";
