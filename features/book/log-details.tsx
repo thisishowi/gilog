@@ -11,6 +11,7 @@ import { useClickOutside, useDisclosure } from "@mantine/hooks";
 import { IconMessage, IconPencil, IconStars } from "@tabler/icons-react";
 import EditLog from "./edit-log";
 import { useState } from "react";
+import { logRateArray } from "@/lib/constants";
 
 export default function LogDetails({
   children,
@@ -42,7 +43,7 @@ export default function LogDetails({
         >
           <Group gap="5">
             <Title order={3} flex="1">
-              Log {`${log.date}`}
+              Log {log.date}
             </Title>
             <ActionIcon variant="subtle" onClick={modalState[1].open}>
               <IconPencil />
@@ -52,15 +53,15 @@ export default function LogDetails({
 
           <Group gap="5">
             <IconStars
-              style={{ marginTop: "3px", opacity: 0.6 }}
+              style={{ marginTop: "2px", opacity: 0.6 }}
               size={22}
               stroke={1.5}
             />
-            <Text>{log.rate || "no data"}</Text>
+            <Text>{logRateArray[log.rate].label || "no data"}</Text>
           </Group>
           <Group gap="5">
             <IconMessage
-              style={{ marginTop: "3px", opacity: 0.6 }}
+              style={{ marginTop: "2px", opacity: 0.6 }}
               size={22}
               stroke={1.5}
             />
