@@ -1,6 +1,7 @@
 import Header from "@/features/book/header";
 import Problems from "@/features/book/problems";
 import { getBook } from "@/lib/db";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function Page({
@@ -10,6 +11,7 @@ export default async function Page({
 }) {
   const { book_id } = await params;
   const book = await getBook(book_id);
+  if (!book) redirect("/");
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Group, Stack, Title } from "@mantine/core";
 import { IconPencil } from "@tabler/icons-react";
 import EditProblemsModal from "./edit-problems-modal";
 import { useDisclosure } from "@mantine/hooks";
@@ -39,7 +39,7 @@ export default function ProblemsPanel({
         />
       </Group>
 
-      <Stack mt="xs" gap="5">
+      <Stack mt="xs" gap="5" pb={65}>
         {filteredProblems.map((problem) => (
           <LogsRow
             key={problem.problem_id}
