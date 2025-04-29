@@ -1,15 +1,12 @@
 "use client";
 
 import {
-  ActionIcon,
-  Affix,
   Button,
   Modal,
   TextInput,
   Stack,
   Textarea,
   Group,
-  Menu,
 } from "@mantine/core";
 import { IconCalendarWeek } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
@@ -19,15 +16,19 @@ import { updateBook } from "@/lib/db";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { BookType } from "@/lib/types";
+import useDeleteBookModal from "./use-delete-book-modal";
+import { useMediaQuery } from "@mantine/hooks";
 
-export default function EditBook({
+export default function EditBookModal({
   book,
   opened,
   close,
+  deleteButton = false,
 }: {
   book: BookType;
   opened: boolean;
   close: () => void;
+  deleteButton?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -48,27 +49,32 @@ export default function EditBook({
         start_date: dayjs(values.start_date).format("YYYY-MM-DD"),
         note: values.note,
       });
-      form.reset();
       close();
       router.refresh();
     } catch (error) {
-      alert("本の更新に失敗しました");
       console.error(error);
+      alert("Failed to update the book.");
     } finally {
       setLoading(false);
     }
   }
 
+  const openDeleteModal = useDeleteBookModal(book, "/");
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
-    <Modal opened={opened} onClose={close} title="Edit book" centered>
+    <Modal opened={opened} onClose={close} title="Add log" centered>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="xs">
           <TextInput
             label="Title"
             placeholder="Book title"
+            maxLength={255}
             required
             {...form.getInputProps("title")}
           />
+
           <DatePickerInput
             label="Start date"
             placeholder="YYYY-MM-DD"
@@ -77,6 +83,8 @@ export default function EditBook({
             rightSectionPointerEvents="none"
             highlightToday
             required
+            dropdownType={isMobile ? "modal" : "popover"}
+            modalProps={{centered: true}}
             {...form.getInputProps("start_date")}
           />
           <Textarea
@@ -89,9 +97,16 @@ export default function EditBook({
           />
         </Stack>
         <Group mt="md" justify="space-between">
-          <Button variant="default" onClick={form.reset}>
-            Reset
-          </Button>
+          <Group gap="xs">
+            <Button variant="default" onClick={form.reset}>
+              Reset
+            </Button>
+            {deleteButton && (
+              <Button color="red" onClick={openDeleteModal}>
+                Delete
+              </Button>
+            )}
+          </Group>
           <Button type="submit" loading={loading}>
             Save
           </Button>

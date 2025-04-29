@@ -6,17 +6,14 @@ import {
   Table,
   Text,
   Menu,
-  Code,
   Box,
 } from "@mantine/core";
-import { modals } from "@mantine/modals";
 import { BookType } from "@/lib/types";
 import Link from "next/link";
 import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons-react";
-import { deleteBook } from "@/lib/db";
-import { useRouter } from "next/navigation";
-import EditBookModal from "./edit-book";
+import EditBookModal from "../../components/edit-book-modal";
 import { useDisclosure } from "@mantine/hooks";
+import useDeleteBookModal from "@/components/use-delete-book-modal";
 
 export default function BookList({ books }: { books: BookType[] }) {
   const rows = books.map((book) => (
@@ -28,7 +25,9 @@ export default function BookList({ books }: { books: BookType[] }) {
         >
           <Box>
             <Anchor component="span">{book.title}</Anchor>
-            <Text size="xs" c="dimmed">since {book.start_date}</Text>
+            <Text size="xs" c="dimmed">
+              since {book.start_date}
+            </Text>
           </Box>
         </Link>
       </Table.Td>
@@ -48,30 +47,8 @@ export default function BookList({ books }: { books: BookType[] }) {
 }
 
 function BookMenu({ book }: { book: BookType }) {
-  const router = useRouter();
-
   // Delete modal
-  const openModal = () =>
-    modals.openConfirmModal({
-      title: "Delete your book",
-      centered: true,
-      children: (
-        <Text size="sm">
-          Are you sure you want to delete your book <Code>{book.title}</Code>?
-          This action cannot be undone.
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: async () => {
-        try {
-          await deleteBook(book.book_id);
-          router.refresh();
-        } catch {
-          alert("削除に失敗しました");
-        }
-      },
-    });
+  const openDeleteModal = useDeleteBookModal(book);
 
   // Edit modal
   const [opened, { open, close }] = useDisclosure(false);
@@ -91,7 +68,7 @@ function BookMenu({ book }: { book: BookType }) {
           <Menu.Item
             leftSection={<IconTrash size={20} />}
             color="red"
-            onClick={openModal}
+            onClick={openDeleteModal}
           >
             Delete
           </Menu.Item>

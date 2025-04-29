@@ -1,1 +1,0 @@
-- book-listのdropdownmenuからmodal?を開く処理を書く

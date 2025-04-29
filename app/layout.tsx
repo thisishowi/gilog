@@ -3,7 +3,7 @@ import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
-import { MantineProvider, createTheme, Container } from "@mantine/core";
+import { MantineProvider, createTheme } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 
 import { auth } from "@/auth";
@@ -22,6 +22,33 @@ export const metadata: Metadata = {
 const theme = createTheme({
   scale: 1.1,
   primaryColor: "teal",
+  components: {
+    Text: {
+      styles: {
+        root: {
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
+        },
+      },
+    },
+    Title: {
+      styles: {
+        root: {
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
+        },
+      },
+    },
+    Badge: {
+      styles: {
+        root: {
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
+        },
+      },
+    },
+    // 必要なら他のコンポーネントにも
+  },
 });
 
 export default async function RootLayout({
@@ -32,13 +59,11 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="ja">
-      <body className={`${font.className}`}>
+      <body className={`${font.className}`} style={{ height: "100dvh" }}>
         <MantineProvider theme={theme} defaultColorScheme="auto">
           <ModalsProvider>
             <DatesProvider settings={{ firstDayOfWeek: 0 }}>
-              <Container h="100dvh" py="5">
-                {session ? children : <SignIn />}
-              </Container>
+              {session ? children : <SignIn />}
             </DatesProvider>
           </ModalsProvider>
         </MantineProvider>

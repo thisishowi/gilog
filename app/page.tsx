@@ -1,17 +1,18 @@
 import Greeting from "@/components/greeting";
 import SignOutButton from "@/components/sign-out-button";
-import { Flex } from "@mantine/core";
+import { Container, Group } from "@mantine/core";
 import { Suspense } from "react";
 import Books from "@/features/home/books";
 import Quote from "@/components/quote";
+import AddBook from "@/features/home/add-book";
 
 export default function Home() {
   return (
-    <>
-      <Flex justify="space-between">
+    <Container h="100%" py="5">
+      <Group justify="space-between">
         <Greeting />
         <SignOutButton />
-      </Flex>
+      </Group>
 
       <Suspense>
         <Quote />
@@ -20,6 +21,8 @@ export default function Home() {
       <Suspense>
         <Books />
       </Suspense>
-    </>
+
+      <AddBook />
+    </Container>
   );
 }

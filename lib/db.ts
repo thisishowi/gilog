@@ -2,7 +2,13 @@
 
 import { auth } from "@/auth";
 import { neon } from "@neondatabase/serverless";
-import { BookType, NewBookType } from "./types";
+import {
+  BookType,
+  LogType,
+  NewBookType,
+  NewLogType,
+  ProblemType,
+} from "./types";
 
 export async function getBooks() {
   const session = await auth();
@@ -63,4 +69,125 @@ export async function getBook(book_id: string) {
     [book_id]
   );
   return response[0] as BookType;
+}
+
+export async function getProblems(book_id: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const result = await sql`
+    SELECT *
+    FROM problems 
+    WHERE book_id = ${book_id}
+    ORDER BY number`;
+  return result as ProblemType[];
+}
+
+export async function deleteProblems(book_id: string | number, name: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  await sql`
+    DELETE FROM problems
+    WHERE book_id = ${book_id} AND name = ${name}`;
+}
+
+export async function updateProblemsNumber(
+  book_id: string | number,
+  prevName: string,
+  length: number,
+  prevLength: number
+) {
+  const sql = neon(process.env.DATABASE_URL!);
+
+  if (length > prevLength) {
+    // 追加が必要な場合
+    const insertValues = Array.from(
+      { length: length - prevLength },
+      (_, i) => `(${book_id}, ${prevLength + i + 1}, '${prevName}')`
+    ).join(",");
+    await sql.query(
+      `
+      INSERT INTO problems (book_id, number, name)
+      VALUES ` + insertValues
+    );
+  } else if (length < prevLength) {
+    // 削除が必要な場合
+    await sql`
+      DELETE FROM problems
+      WHERE name = ${prevName} AND number > ${length}`;
+  }
+}
+
+export async function updateProblemsName(
+  book_id: string | number,
+  prevName: string,
+  newName: string
+) {
+  const sql = neon(process.env.DATABASE_URL!);
+  await sql`
+    UPDATE problems
+    SET name = ${newName}
+    WHERE book_id = ${book_id} AND name = ${prevName}`;
+}
+
+export async function getLogs(book_id: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const result = await sql`
+    SELECT
+      log_id,
+      book_id,
+      problem_id,
+      TO_CHAR(date, 'YYYY-MM-DD') AS date,
+      rate,
+      comment
+    FROM logs 
+    WHERE book_id = ${book_id}
+    ORDER BY date`;
+  return result as LogType[];
+}
+
+export async function updateProblem(
+  problem_id: number | string,
+  {
+    page,
+    text,
+    note,
+  }: {
+    page: number;
+    text: string;
+    note: string;
+  }
+) {
+  const sql = neon(process.env.DATABASE_URL!);
+  console.log("updateProblem", problem_id, page, text, note);
+  await sql`
+    UPDATE problems
+    SET page = ${page}, text = ${text}, note = ${note}
+    WHERE problem_id = ${problem_id}`;
+}
+
+export async function addLog({
+  book_id,
+  problem_id,
+  date,
+  rate,
+  comment,
+}: NewLogType) {
+  const sql = neon(process.env.DATABASE_URL!);
+  await sql`
+    INSERT INTO logs (book_id, problem_id, date, rate, comment)
+    VALUES (${book_id}, ${problem_id}, ${date}, ${rate}, ${comment})`;
+}
+
+export async function editLog(
+  log_id: number,
+  { date, rate, comment }: { date: string; rate: number; comment: string }
+) {
+  const sql = neon(process.env.DATABASE_URL!);
+  await sql`
+    UPDATE logs
+    SET date = ${date}, rate = ${rate}, comment = ${comment}
+    WHERE log_id = ${log_id}`;
+}
+
+export async function deleteLog(log_id: number) {
+  const sql = neon(process.env.DATABASE_URL!);
+  await sql`DELETE FROM logs WHERE log_id = ${log_id}`;
 }

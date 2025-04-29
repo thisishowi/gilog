@@ -1,72 +1,75 @@
 "use client";
 
 import {
-  ActionIcon,
-  Affix,
   Button,
   Modal,
-  TextInput,
   Stack,
   Textarea,
   Group,
+  NativeSelect,
 } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { IconCalendarWeek, IconPlus } from "@tabler/icons-react";
+import { IconCalendarWeek } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { DatePickerInput } from "@mantine/dates";
 import { useState } from "react";
-import { addBook } from "@/lib/db";
+import { addLog } from "@/lib/db";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
+import { ProblemType } from "@/lib/types";
+import { logRateOptions } from "@/lib/constants";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
-export default function AddBook() {
-  const [opened, { open, close }] = useDisclosure(false);
+export default function AddLog({
+  children,
+  problem,
+}: {
+  children: (open: () => void) => React.ReactNode;
+  problem: ProblemType;
+}) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm({
     initialValues: {
-      title: "",
-      start_date: new Date(),
-      note: "",
+      date: new Date(),
+      rate: 0,
+      comment: "",
     },
   });
 
   async function handleSubmit(values: typeof form.values) {
     setLoading(true);
     try {
-      const newBookId = await addBook({
-        title: values.title,
-        start_date: dayjs(values.start_date).format("YYYY-MM-DD"),
-        note: values.note,
+      await addLog({
+        book_id: problem.book_id,
+        problem_id: problem.problem_id,
+        date: dayjs(values.date).format("YYYY-MM-DD"),
+        rate: values.rate,
+        comment: values.comment,
       });
-      router.push(`/${newBookId}`);
       form.reset();
       close();
+      router.refresh();
     } catch (error) {
-      alert("本の登録に失敗しました");
       console.error(error);
+      alert("Failed to add the log.");
     } finally {
       setLoading(false);
     }
   }
 
+  const [opened, { open, close }] = useDisclosure(false);
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Add book" centered>
+      {children(open)}
+      <Modal opened={opened} onClose={close} title="Add log" centered>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack gap="xs">
-            <TextInput
-              label="Title"
-              placeholder="Book title"
-              maxLength={255}
-              required
-              {...form.getInputProps("title")}
-            />
             <DatePickerInput
-              label="Start date"
+              label="Date"
               placeholder="YYYY-MM-DD"
               valueFormat="YYYY-MM-DD"
               rightSection={<IconCalendarWeek stroke={1.5} />}
@@ -75,35 +78,34 @@ export default function AddBook() {
               required
               dropdownType={isMobile ? "modal" : "popover"}
               modalProps={{ centered: true }}
-              {...form.getInputProps("start_date")}
+              {...form.getInputProps("date")}
+            />
+            <NativeSelect
+              label="Rate"
+              data={logRateOptions}
+              {...form.getInputProps("rate")}
             />
             <Textarea
-              label="Note"
-              placeholder="Optional note"
+              label="Comment"
+              placeholder="Optional comment"
               autosize
               minRows={1.5}
               maxRows={4}
-              {...form.getInputProps("note")}
+              {...form.getInputProps("comment")}
             />
           </Stack>
           <Group mt="md" justify="space-between">
-            <Button variant="default" onClick={form.reset}>
-              Reset
-            </Button>
+            <Group gap="xs">
+              <Button variant="default" onClick={form.reset}>
+                Reset
+              </Button>
+            </Group>
             <Button type="submit" loading={loading}>
-              Add Book
+              Save
             </Button>
           </Group>
         </form>
       </Modal>
-
-      {!opened && (
-        <Affix position={{ bottom: 10, right: 10 }}>
-          <ActionIcon variant="filled" size="xl" radius="md" onClick={open}>
-            <IconPlus size={30} />
-          </ActionIcon>
-        </Affix>
-      )}
     </>
   );
 }
