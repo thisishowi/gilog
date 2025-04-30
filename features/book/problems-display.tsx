@@ -1,6 +1,6 @@
 "use client";
 
-import NoProblems from "./no-problems";
+import NoProblems from "../../components/no-problems";
 import { Button, Tabs } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useProblems } from "@/contexts/problems-context";
 
 export default function ProblemsDisplay() {
-  const { book_id, problems, uniqueNames } = useProblems();
+  const { book_id, uniqueNames } = useProblems();
 
   const isEmpty = !uniqueNames.length;
 

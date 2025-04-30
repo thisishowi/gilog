@@ -68,6 +68,12 @@ export async function getBook(book_id: string) {
      WHERE book_id = $1`,
     [book_id]
   );
+  if (response.length) {
+    await sql`
+      UPDATE books
+      SET last_updated = NOW()
+      WHERE book_id = ${book_id}`;
+  }
   return response[0] as BookType;
 }
 

@@ -2,7 +2,6 @@
 
 import {
   ActionIcon,
-  Affix,
   Button,
   Modal,
   TextInput,
@@ -98,11 +97,17 @@ export default function AddBook() {
       </Modal>
 
       {!opened && (
-        <Affix position={{ bottom: 10, right: 10 }}>
-          <ActionIcon variant="filled" size="xl" radius="md" onClick={open}>
-            <IconPlus size={30} />
-          </ActionIcon>
-        </Affix>
+        <ActionIcon
+          variant="filled"
+          size="xl"
+          radius="md"
+          pos="fixed"
+          bottom="1rem"
+          right="1rem"
+          onClick={open}
+        >
+          <IconPlus size={30} />
+        </ActionIcon>
       )}
     </>
   );
