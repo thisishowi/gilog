@@ -1,12 +1,13 @@
 import { useProblems } from "@/contexts/problems-context";
 import { ProblemType } from "@/lib/types";
 import { ActionIcon, Button, Group, Stack } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useClickOutside, useDisclosure } from "@mantine/hooks";
 import ProblemDetails from "./problem-details";
 import { IconPlus } from "@tabler/icons-react";
 import AddLog from "./add-log";
 import { logRateArray } from "@/lib/constants";
 import LogDetails from "./log-details";
+import { useState } from "react";
 
 export default function LogsRow({
   problem,
@@ -24,6 +25,10 @@ export default function LogsRow({
 
   const cellSize = "1.6rem";
 
+  const [ref1, setRef1] = useState<HTMLButtonElement | null>(null);
+  const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
+  useClickOutside(close, ["mouseup", "touchend"], [ref1, ref2]);
+
   return (
     <Group align="start" gap="8">
       <Button
@@ -33,12 +38,13 @@ export default function LogsRow({
         w={`${maxDigits + 2}ch`}
         h={cellSize}
         onClick={toggle}
+        ref={setRef1}
       >
         {problem.number}
       </Button>
 
       <Stack gap="5" flex="1">
-        {opened && <ProblemDetails close={close} problem={problem} />}
+        {opened && <ProblemDetails close={close} problem={problem} ref={setRef2} />}
         <Group gap="4">
           {filteredLogs.map((log, i, a) => (
             <LogDetails key={log.log_id} log={log}>

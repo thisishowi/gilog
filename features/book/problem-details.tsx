@@ -23,9 +23,11 @@ import { useRouter } from "next/navigation";
 export default function ProblemDetails({
   close,
   problem,
+  ref
 }: {
   close: () => void;
   problem: ProblemType;
+  ref: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
 }) {
   const [opened, { open, close: closeModal }] = useDisclosure(false);
 
@@ -45,62 +47,62 @@ export default function ProblemDetails({
   }
 
   return (
-    <Paper
-      bg="var(--mantine-color-default)"
-      bd={`1px solid ${
-        problem.reserved
-          ? "var(--mantine-primary-color-filled)"
-          : "var(--mantine-color-default-border)"
-      }`}
-      p="xs"
-    >
-      <Group gap="5">
-        <Title order={3} flex="1">
-          {problem.name} {problem.number}
-        </Title>
-        <ActionIcon
-          variant="subtle"
-          color={problem.reserved ? "teal" : "gray"}
-          loading={loading}
-          onClick={handleReserve}
-        >
-          <IconCalendarClock />
-        </ActionIcon>
-        <ActionIcon variant="subtle" onClick={open}>
-          <IconPencil />
-        </ActionIcon>
-        <EditProblemModal
-          problem={problem}
-          opened={opened}
-          close={closeModal}
-        />
-        <CloseButton onClick={close} />
-      </Group>
+    <>
+      <Paper
+        bg="var(--mantine-color-default)"
+        bd={`1px solid ${
+          problem.reserved
+            ? "var(--mantine-primary-color-filled)"
+            : "var(--mantine-color-default-border)"
+        }`}
+        p="xs"
+        ref={ref}
+      >
+        <Group gap="5">
+          <Title order={3} flex="1">
+            {problem.name} {problem.number}
+          </Title>
+          <ActionIcon
+            variant="subtle"
+            color={problem.reserved ? "teal" : "gray"}
+            loading={loading}
+            onClick={handleReserve}
+          >
+            <IconCalendarClock />
+          </ActionIcon>
+          <ActionIcon variant="subtle" onClick={open}>
+            <IconPencil />
+          </ActionIcon>
+          <CloseButton onClick={close} />
+        </Group>
 
-      <Group align="flex-start" gap="5" wrap="nowrap">
-        <IconFileText
-          style={{ marginTop: "3px", opacity: 0.6 }}
-          size={22}
-          stroke={1.5}
-        />
-        <Text>{problem.page || "no data"}</Text>
-      </Group>
-      <Group gap="5">
-        <IconBlockquote
-          style={{ marginTop: "3px", opacity: 0.6 }}
-          size={22}
-          stroke={1.5}
-        />
-        <Text>{problem.text || "no data"}</Text>
-      </Group>
-      <Group gap="5">
-        <IconMessage
-          style={{ marginTop: "3px", opacity: 0.6 }}
-          size={22}
-          stroke={1.5}
-        />
-        <Text>{problem.note || "no data"}</Text>
-      </Group>
-    </Paper>
+        <Group align="flex-start" gap="5" wrap="nowrap">
+          <IconFileText
+            style={{ marginTop: "3px", opacity: 0.6 }}
+            size={22}
+            stroke={1.5}
+          />
+          <Text>{problem.page || "no data"}</Text>
+        </Group>
+        <Group gap="5">
+          <IconBlockquote
+            style={{ marginTop: "3px", opacity: 0.6 }}
+            size={22}
+            stroke={1.5}
+          />
+          <Text>{problem.text || "no data"}</Text>
+        </Group>
+        <Group gap="5">
+          <IconMessage
+            style={{ marginTop: "3px", opacity: 0.6 }}
+            size={22}
+            stroke={1.5}
+          />
+          <Text>{problem.note || "no data"}</Text>
+        </Group>
+      </Paper>
+
+      <EditProblemModal problem={problem} opened={opened} close={closeModal} />
+    </>
   );
 }
