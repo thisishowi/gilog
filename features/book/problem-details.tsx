@@ -10,11 +10,15 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBlockquote,
+  IconCalendarClock,
   IconFileText,
   IconMessage,
   IconPencil,
 } from "@tabler/icons-react";
 import EditProblemModal from "./edit-problem-modal";
+import { useState } from "react";
+import { reserveProblem } from "@/lib/db";
+import { useRouter } from "next/navigation";
 
 export default function ProblemDetails({
   close,
@@ -25,16 +29,43 @@ export default function ProblemDetails({
 }) {
   const [opened, { open, close: closeModal }] = useDisclosure(false);
 
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  async function handleReserve() {
+    setLoading(true);
+    try {
+      await reserveProblem(problem.problem_id, !problem.reserved);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to reserving the problem");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <Paper
-      bg="var(--mantine-color-default"
-      bd="1px solid var(--mantine-color-default-border)"
+      bg="var(--mantine-color-default)"
+      bd={`1px solid ${
+        problem.reserved
+          ? "var(--mantine-primary-color-filled)"
+          : "var(--mantine-color-default-border)"
+      }`}
       p="xs"
     >
       <Group gap="5">
         <Title order={3} flex="1">
           {problem.name} {problem.number}
         </Title>
+        <ActionIcon
+          variant="subtle"
+          color={problem.reserved ? "teal" : "gray"}
+          loading={loading}
+          onClick={handleReserve}
+        >
+          <IconCalendarClock />
+        </ActionIcon>
         <ActionIcon variant="subtle" onClick={open}>
           <IconPencil />
         </ActionIcon>

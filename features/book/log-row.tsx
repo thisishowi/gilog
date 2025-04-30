@@ -28,7 +28,7 @@ export default function LogsRow({
     <Group align="start" gap="8">
       <Button
         size="compact-xs"
-        variant="default"
+        variant={problem.reserved ? "filled" : "default"}
         p="0"
         w={`${maxDigits + 2}ch`}
         h={cellSize}
@@ -60,10 +60,10 @@ export default function LogsRow({
               <ActionIcon
                 variant="subtle"
                 size={cellSize}
-                c="gray"
+                color={problem.reserved ? "teal" : "gray"}
                 onClick={open}
               >
-                <IconPlus size={18} />
+                <IconPlus size={18} stroke={problem.reserved ? 3 : 2} />
               </ActionIcon>
             )}
           </AddLog>

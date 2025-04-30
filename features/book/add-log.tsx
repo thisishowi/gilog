@@ -12,7 +12,7 @@ import { IconCalendarWeek } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { DatePickerInput } from "@mantine/dates";
 import { useState } from "react";
-import { addLog } from "@/lib/db";
+import { addLog, reserveProblem } from "@/lib/db";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { ProblemType } from "@/lib/types";
@@ -47,6 +47,7 @@ export default function AddLog({
         rate: values.rate,
         comment: values.comment,
       });
+      if (problem.reserved) await reserveProblem(problem.problem_id, false);
       form.reset();
       close();
       router.refresh();

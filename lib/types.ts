@@ -17,6 +17,7 @@ export interface ProblemType {
   number: number;
   text: string;
   note: string;
+  reserved: boolean;
 }
 
 // export type NewProblemType = Omit<ProblemType, "problem_id">;

@@ -83,7 +83,7 @@ export async function getProblems(book_id: string) {
     SELECT *
     FROM problems 
     WHERE book_id = ${book_id}
-    ORDER BY number`;
+    ORDER BY number, problem_id`;
   return result as ProblemType[];
 }
 
@@ -106,11 +106,11 @@ export async function updateProblemsNumber(
     // 追加が必要な場合
     const insertValues = Array.from(
       { length: length - prevLength },
-      (_, i) => `(${book_id}, ${prevLength + i + 1}, '${prevName}')`
+      (_, i) => `(${book_id}, ${prevLength + i + 1}, '${prevName}', false)`
     ).join(",");
     await sql.query(
       `
-      INSERT INTO problems (book_id, number, name)
+      INSERT INTO problems (book_id, number, name, reserved)
       VALUES ` + insertValues
     );
   } else if (length < prevLength) {
@@ -133,22 +133,6 @@ export async function updateProblemsName(
     WHERE book_id = ${book_id} AND name = ${prevName}`;
 }
 
-export async function getLogs(book_id: string) {
-  const sql = neon(process.env.DATABASE_URL!);
-  const result = await sql`
-    SELECT
-      log_id,
-      book_id,
-      problem_id,
-      TO_CHAR(date, 'YYYY-MM-DD') AS date,
-      rate,
-      comment
-    FROM logs 
-    WHERE book_id = ${book_id}
-    ORDER BY date`;
-  return result as LogType[];
-}
-
 export async function updateProblem(
   problem_id: number | string,
   {
@@ -167,6 +151,33 @@ export async function updateProblem(
     UPDATE problems
     SET page = ${page}, text = ${text}, note = ${note}
     WHERE problem_id = ${problem_id}`;
+}
+
+export async function reserveProblem(
+  problem_id: number | string,
+  reserved: boolean
+) {
+  const sql = neon(process.env.DATABASE_URL!);
+  await sql`
+    UPDATE problems
+    SET reserved = ${reserved}
+    WHERE problem_id = ${problem_id}`;
+}
+
+export async function getLogs(book_id: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const result = await sql`
+    SELECT
+      log_id,
+      book_id,
+      problem_id,
+      TO_CHAR(date, 'YYYY-MM-DD') AS date,
+      rate,
+      comment
+    FROM logs 
+    WHERE book_id = ${book_id}
+    ORDER BY date`;
+  return result as LogType[];
 }
 
 export async function addLog({
