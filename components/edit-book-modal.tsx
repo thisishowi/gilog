@@ -64,7 +64,7 @@ export default function EditBookModal({
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <Modal opened={opened} onClose={close} title="Add log" centered>
+    <Modal opened={opened} onClose={close} title={deleteButton ? "Edit book" : "Add book"} centered>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="xs">
           <TextInput
