@@ -19,16 +19,9 @@ import EditProblemModal from "./edit-problem-modal";
 import { useState } from "react";
 import { reserveProblem } from "@/lib/db";
 import { useRouter } from "next/navigation";
+import { useProblems } from "@/contexts/problems-context";
 
-export default function ProblemDetails({
-  close,
-  problem,
-  ref
-}: {
-  close: () => void;
-  problem: ProblemType;
-  ref: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
-}) {
+export default function ProblemDetails({ problem }: { problem: ProblemType }) {
   const [opened, { open, close: closeModal }] = useDisclosure(false);
 
   const [loading, setLoading] = useState(false);
@@ -46,6 +39,8 @@ export default function ProblemDetails({
     }
   }
 
+  const { detailDispatch } = useProblems();
+
   return (
     <>
       <Paper
@@ -56,7 +51,6 @@ export default function ProblemDetails({
             : "var(--mantine-color-default-border)"
         }`}
         p="xs"
-        ref={ref}
       >
         <Group gap="5">
           <Title order={3} flex="1">
@@ -73,7 +67,7 @@ export default function ProblemDetails({
           <ActionIcon variant="subtle" onClick={open}>
             <IconPencil />
           </ActionIcon>
-          <CloseButton onClick={close} />
+          <CloseButton onClick={() => detailDispatch({ type: "close" })} />
         </Group>
 
         <Group align="flex-start" gap="5" wrap="nowrap">

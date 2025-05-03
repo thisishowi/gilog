@@ -1,13 +1,11 @@
 import { useProblems } from "@/contexts/problems-context";
 import { ProblemType } from "@/lib/types";
 import { ActionIcon, Button, Group, Stack } from "@mantine/core";
-import { useClickOutside, useDisclosure } from "@mantine/hooks";
 import ProblemDetails from "./problem-details";
 import { IconPlus } from "@tabler/icons-react";
 import AddLog from "./add-log";
 import { logRateArray } from "@/lib/constants";
 import LogDetails from "./log-details";
-import { useState } from "react";
 
 export default function LogsRow({
   problem,
@@ -16,18 +14,12 @@ export default function LogsRow({
   problem: ProblemType;
   maxDigits: number;
 }) {
-  const { logs } = useProblems();
+  const { logs, detailId, detailDispatch} = useProblems();
   const filteredLogs = logs.filter(
     (log) => log.problem_id === problem.problem_id
   );
 
-  const [opened, { toggle, close }] = useDisclosure(false);
-
   const cellSize = "1.6rem";
-
-  const [ref1, setRef1] = useState<HTMLButtonElement | null>(null);
-  const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
-  useClickOutside(close, ["mouseup", "touchend"], [ref1, ref2]);
 
   return (
     <Group align="start" gap="8">
@@ -37,24 +29,30 @@ export default function LogsRow({
         p="0"
         w={`${maxDigits + 2}ch`}
         h={cellSize}
-        onClick={toggle}
-        ref={setRef1}
+        onClick={() =>
+          detailDispatch({
+            type: "toggle",
+            panel: "problem",
+            id: problem.problem_id,
+          })
+        }
       >
         {problem.number}
       </Button>
 
       <Stack gap="5" flex="1">
-        {opened && <ProblemDetails close={close} problem={problem} ref={setRef2} />}
+        {detailId === problem.problem_id && (
+          <ProblemDetails problem={problem} />
+        )}
         <Group gap="4">
           {filteredLogs.map((log, i, a) => (
             <LogDetails key={log.log_id} log={log}>
-              {(toggle, setRef) => (
+              {(toggle) => (
                 <ActionIcon
                   size={cellSize}
                   color={logRateArray[log.rate].color}
                   opacity={i < a.length - 1 ? 0.35 : 1}
                   onClick={toggle}
-                  ref={setRef}
                 >
                   {logRateArray[log.rate].label}
                 </ActionIcon>

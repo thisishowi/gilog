@@ -7,38 +7,33 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useClickOutside, useDisclosure } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { IconMessage, IconPencil, IconStars } from "@tabler/icons-react";
 import EditLog from "./edit-log";
-import { useState } from "react";
 import { logRateArray } from "@/lib/constants";
+import { useProblems } from "@/contexts/problems-context";
 
 export default function LogDetails({
   children,
   log,
 }: {
-  children: (
-    toggle: () => void,
-    setRef1: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>
-  ) => React.ReactNode;
+  children: (toggle: () => void) => React.ReactNode;
   log: LogType;
 }) {
-  const [opened, { toggle, close }] = useDisclosure(false);
   const modalState = useDisclosure(false);
 
-  const [ref1, setRef1] = useState<HTMLButtonElement | null>(null);
-  const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
-  useClickOutside(close, ["mouseup", "touchend"], [ref1, ref2]);
+  const { detailId, detailDispatch } = useProblems();
 
   return (
     <>
-      {children(toggle, setRef1)}
-      {opened && (
+      {children(() =>
+        detailDispatch({ type: "toggle", panel: "log", id: log.log_id })
+      )}
+      {detailId === log.log_id && (
         <Paper
           bg="var(--mantine-color-default"
           bd="1px solid var(--mantine-color-default-border)"
           p="xs"
-          ref={setRef2}
           w="100%"
         >
           <Group gap="5">
@@ -48,7 +43,7 @@ export default function LogDetails({
             <ActionIcon variant="subtle" onClick={modalState[1].open}>
               <IconPencil />
             </ActionIcon>
-            <CloseButton onClick={close} />
+            <CloseButton onClick={() => detailDispatch({ type: "close" })} />
           </Group>
 
           <Group gap="5">
